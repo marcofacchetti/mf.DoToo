@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:mf.DoToo"
+             xmlns:converter="clr-namespace:mf.DoToo.Converters"
+             mc:Ignorable="d"
+             x:Class="mf.DoToo.Views.MainView"
+             Title=" Do Too!">
+    <ContentPage.Resources>
+        <!-- 
+            Nella sezione ResourceDirectory definisco un'instanza del converter.
+        -->
+        <ResourceDictionary>
+            <converter:StatusColorConverter x:Key="statusColorConverter"/>
+        </ResourceDictionary>
+        
+    </ContentPage.Resources>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Add" Command="{Binding AddItem}" />
+    </ContentPage.ToolbarItems>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Button Style="{StaticResource FilterButton}"  Text="{Binding FilterText, StringFormat='Filter {0}'}" Grid.Row="0" Command="{Binding ToggleFilter}" 
+                BackgroundColor="{Binding ShowAll, Converter={ StaticResource statusColorConverter}}" TextColor="Black">
+            <Button.Triggers>
+                <DataTrigger TargetType="Button" Binding="{Binding ShowAll}" Value="True">
+                    <Setter Property="TextColor" Value="White"></Setter>
+                </DataTrigger>
+            </Button.Triggers>
+        </Button>
+                
+        <ListView x:Name="ItemsListView" Grid.Row="1" RowHeight="70" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" ItemSelected="ItemsListView_ItemSelected">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <ViewCell.ContextActions>
+                            <MenuItem Text="{Binding StatusText}" Command="{Binding ToggleCompleted}"></MenuItem>
+                            <MenuItem Text="Remove" Command="{Binding Remove}"></MenuItem>
+                        </ViewCell.ContextActions>
+                        <Grid Padding="15,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="1" Grid.Row="0" Text="{Binding Item.Title}" FontSize="Medium"/>
+                            <BoxView Grid.RowSpan="2" BackgroundColor="{Binding Item.Completed, Converter={StaticResource statusColorConverter}}"/>
+                            <Label Grid.Column="1" Grid.Row="1" Text="{Binding Item.Due, StringFormat='{0:dd/MM/yyyy}'}" FontSize="Micro"/>
+                            <Label Grid.Column="1" Grid.Row="1" HorizontalTextAlignment="End" Text="Completed" IsVisible="{Binding Item.Completed}" FontSize="Micro" TextColor="{StaticResource CompletedColor}"/>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            
+
+
+        </ListView>
+
+    </Grid>
+</ContentPage>
